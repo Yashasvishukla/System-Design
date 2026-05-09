@@ -106,10 +106,11 @@ public class ClientIdentifier: IClientIdentifier
         if (!string.IsNullOrWhiteSpace(ipAddress))
         {
             _logger.LogDebug("IP address found: {IpAddress}", ipAddress);
-            return "unknown";
+            return $"ip:{ipAddress}";
         }
 
-        return $"ip:{ipAddress}";
+        _logger.LogDebug("IP address not found, using unknown client identifier");
+        return "ip:unknown";
     }
 
 

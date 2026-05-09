@@ -23,13 +23,20 @@ public static class RateLimitServiceExtensions
         var rateLimitConfig = configuration
             .GetSection(RateLimitConfiguration.SectionName)
             .Get<RateLimitConfiguration>();
-
+        
         if (rateLimitConfig == null)
         {
             throw new InvalidOperationException($"Configuration section '{RateLimitConfiguration.SectionName}' not found.");
         }
         
+        var endpointRuleSection = configuration.GetSection($"{RateLimitConfiguration.SectionName}:EndpointRules");
+        rateLimitConfig.EndpointRules = endpointRuleSection.Get<List<EndpointRateLimitRule>>() ?? new List<EndpointRateLimitRule>();
+        
+        services.Configure<RateLimitConfiguration>(configuration.GetSection(RateLimitConfiguration.SectionName));
+        
         rateLimitConfig.Validate();
+        
+        
 
         if (rateLimitConfig.EnableRateLimiting)
         {
@@ -80,5 +87,16 @@ public static class RateLimitServiceExtensions
             throw new ArgumentNullException(nameof(app));
         app.UseMiddleware<RateLimitMiddleware>();
         return app;
+    }
+
+    public static IHealthChecksBuilder AddRateLimiterHealthCheck(this IHealthChecksBuilder builder,
+        string name = "rate_limiter", TimeSpan? timeout = null)
+    {
+        if (builder == null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+        
+        return builder.AddCheck<RateLimitHealthCheck>(name, tags: new[] { "rate_limiter", "redis" }, timeout: timeout);
     }
 }

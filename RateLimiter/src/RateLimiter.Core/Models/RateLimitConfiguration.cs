@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace RateLimiter.RateLimiter.Core.Models;
 
 /// <summary>
@@ -7,10 +9,13 @@ public class RateLimitConfiguration
 {
     public const string SectionName = "RateLimiting";
     
+    [Required]
     public string RedisConnectionString { get; set; } = string.Empty;
 
-    public IReadOnlyList<EndpointRateLimitRule> EndpointRules { get; set; } = new List<EndpointRateLimitRule>();
+    [Required]
+    public List<EndpointRateLimitRule> EndpointRules { get; set; } = new();
 
+    [Required]
     public ClientIdentificationStrategy ClientIdentification { get; set; } = new();
     
     public bool EnableRateLimiting { get; set; } = true;
@@ -25,6 +30,7 @@ public class RateLimitConfiguration
     {
         if (string.IsNullOrWhiteSpace(RedisConnectionString))
             throw new ArgumentException("RedisConnectionString must be set.", nameof(RedisConnectionString));
+        
         if (EndpointRules.Count == 0)
             throw new ArgumentException("At least one endpoint rule must be defined.", nameof(EndpointRules));
         

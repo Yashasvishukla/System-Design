@@ -7,7 +7,7 @@ namespace RateLimiter.RateLimiter.Core.Models;
 /// </summary>
 public class EndpointRateLimitRule
 {
-    public Guid RuleId { get; set; }
+    required public string RuleId { get; set; }
     
     [Required]
     [RegularExpression(@"^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS):/[\w/\-]*$")]
