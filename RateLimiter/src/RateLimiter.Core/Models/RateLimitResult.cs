@@ -63,7 +63,9 @@ public class RateLimitResult
         return new RateLimitResult
         {
             IsAllowed = false,
+            IsRateLimited = true,
             RemainingTokens = remainingTokens,
+            Capacity = capacity,
             ResetTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             RetryAfter = retryAfter,
             AppliedRuleId = appliedRuleId,
